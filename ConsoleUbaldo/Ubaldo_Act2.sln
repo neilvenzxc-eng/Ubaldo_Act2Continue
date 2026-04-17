@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.4.11605.240 stable
+VisualStudioVersion = 18.4.11605.240
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ubaldo_Act2", "Ubaldo_Act2.csproj", "{9463301E-3D59-4DD5-AC8C-9732F2A0F4DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoyaltyPoints.UI", "LoyaltyPoints.UI.csproj", "{9463301E-3D59-4DD5-AC8C-9732F2A0F4DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbaldoAppService", "..\LoyaltyService\UbaldoAppService.csproj", "{42C74A4F-F318-4D16-8F72-C4578D2AB1FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoyaltyPoints.Services", "..\LoyaltyService\LoyaltyPoints.Services.csproj", "{42C74A4F-F318-4D16-8F72-C4578D2AB1FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbaldoDataService", "..\UbaldoDataService\UbaldoDataService.csproj", "{41DB2572-D9C2-43C3-97F6-C62DB564D735}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoyaltyPoints.Data", "..\UbaldoDataService\LoyaltyPoints.Data.csproj", "{41DB2572-D9C2-43C3-97F6-C62DB564D735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UbaldoModels", "..\UbaldoModels\UbaldoModels.csproj", "{47D4FE81-5BA9-4B42-BAA8-AD33121FF7E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoyaltyPoints.Models", "..\UbaldoModels\LoyaltyPoints.Models.csproj", "{47D4FE81-5BA9-4B42-BAA8-AD33121FF7E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UbaldoDataService\UbaldoDataService.csproj" />
-    <ProjectReference Include="..\UbaldoModels\UbaldoModels.csproj" />
+    <PackageReference Include="MySql.Data" Version="9.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UbaldoModels\LoyaltyPoints.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,21 +1,22 @@
-﻿using UbaldoModels;
-using UbaldoDataService;
+﻿using LoyaltyPoints.Data;
+using LoyaltyPoints.Models;
 
-namespace UbaldoAppService
+namespace LoyaltyPoints.Services
 {
     public class LoyaltyService
     {
-        private readonly IUserRepository _repo;
+        //database acces
+        private readonly UserRepository _repo = new UserRepository();
 
-        public LoyaltyService(IUserRepository repository)
-        {
-            _repo = repository;
-        }
+        public User CurrentUser { get; private set; }
 
+        public LoyaltyService() { }
+
+        //login
         public bool Login(string username, string password)
         {
-            User user = _repo.GetUser(username, password);
-            return user != null;
+            CurrentUser = _repo.GetUser(username, password);
+            return CurrentUser != null;
         }
 
         public void CreateAccount(string username, string password)
@@ -25,55 +26,77 @@ namespace UbaldoAppService
 
         public int GetPoints()
         {
-            return _repo.GetCurrentPoints();
+            return CurrentUser?.Points ?? 0;
         }
-
         public int AddPoints(int moneySpent)
         {
-            int currentPoints = GetPoints();
-            int earned = 0;
+            if (CurrentUser == null) return 0;
+            if (moneySpent < 500) return 0;
 
-            if (moneySpent >= 7000) earned = 150;
-            else if (moneySpent >= 5000) earned = 100;
-            else if (moneySpent >= 4000) earned = 75;
-            else if (moneySpent >= 3000) earned = 50;
-            else if (moneySpent >= 2000) earned = 30;
-            else if (moneySpent >= 1000) earned = 15;
-            else if (moneySpent >= 500) earned = 5;
+            int earned = moneySpent / 100;
 
-            if (earned > 0)
+            if (moneySpent >= 5000)
             {
-                _repo.UpdatePoints(currentPoints + earned);
+                earned += 20;
             }
+
+            if (moneySpent >= 10000)
+            {
+                earned += 50;
+            }
+
+            CurrentUser.Points += earned;
+            _repo.UpdatePoints(CurrentUser.Id, CurrentUser.Points);
 
             return earned;
         }
 
         public bool UsePoints(int option)
         {
-            int currentPoints = GetPoints();
-            int cost = 0;
-
-            switch (option)
+            if (CurrentUser == null)
             {
-                case 1: cost = 100; break; // 5% Discount
-                case 2: cost = 200; break; // 10% Discount
-                case 3: cost = 400; break; // 20% Discount
-                default: return false;
+                return false;
             }
 
-            if (currentPoints >= cost)
+            int cost = 0;
+
+            if (option == 1)
             {
-                _repo.UpdatePoints(currentPoints - cost);
+                cost = 50;
+            }
+            else if (option == 2)
+            {
+                cost = 120;
+            }
+            else if (option == 3)
+            {
+                cost = 250;
+            }
+            else if (option == 4)
+            {
+                cost = 300;
+            }
+            else if (option == 5)
+            {
+                cost = 400;
+            }
+            else if (option == 6)
+            {
+                cost = 500;
+            }
+            else
+            {
+                return false;
+            }
+
+            if (CurrentUser.Points >= cost)
+            {
+                CurrentUser.Points -= cost;
+                _repo.UpdatePoints(CurrentUser.Id, CurrentUser.Points);
                 return true;
             }
 
             return false;
-        }
-
-        public void DeleteAccount(string username)
-        {
-            _repo.DeleteUser(username);
         }
     }
 }
