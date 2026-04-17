@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LoyaltyService\LoyaltyPoints.Services.csproj" />
-    <ProjectReference Include="..\UbaldoDataService\LoyaltyPoints.Data.csproj" />
+    <ProjectReference Include="..\LoyaltyService\UbaldoAppService.csproj" />
+    <ProjectReference Include="..\UbaldoDataService\UbaldoDataService.csproj" />
   </ItemGroup>
 
 </Project>
