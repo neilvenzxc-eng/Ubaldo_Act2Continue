@@ -1,16 +1,16 @@
-﻿using System;
-using UbaldoAppService;
-using UbaldoDataService;
+﻿using LoyaltyPoints.Data;    
+using LoyaltyPoints.Services;
+using System;
 
-namespace UbaldoLoyaltyProgram
+namespace LoyaltyPoints.UI   
 {
     internal class Program
     {
-        // Initialized with the combined UserRepository which handles both SQL and JSON
-        static LoyaltyService service = new LoyaltyService(new UserRepository());
+        static LoyaltyService service = new LoyaltyService();
 
         static void Main(string[] args)
         {
+
             try
             {
                 while (true)
@@ -22,7 +22,10 @@ namespace UbaldoLoyaltyProgram
                     Console.Write("Are you a member? (Y/N): ");
 
                     string input = Console.ReadLine();
-                    if (string.IsNullOrEmpty(input)) continue;
+                    if (string.IsNullOrEmpty(input))
+                    {
+                        continue;
+                    }
 
                     char memberAns = Char.ToLower(input[0]);
 
@@ -34,12 +37,18 @@ namespace UbaldoLoyaltyProgram
                     {
                         CreateAccount();
                     }
+                    else
+                    {
+                        Console.WriteLine("invalid input. Please enter Y or N.");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("\n[CRITICAL ERROR] Check if XAMPP MySQL is running!");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\n[ERROR] Check if XAMPP MySQL is running!");
                 Console.WriteLine("Details: " + ex.Message);
+                Console.ResetColor();
                 Console.WriteLine("\nPress Enter to exit...");
                 Console.ReadLine();
             }
@@ -50,9 +59,18 @@ namespace UbaldoLoyaltyProgram
             Console.Clear();
             Console.WriteLine("--- CREATE NEW ACCOUNT ---");
             Console.Write("Do you want to create an account? (Y/N): ");
-
             string input = Console.ReadLine();
-            if (!string.IsNullOrEmpty(input) && Char.ToLower(input[0]) == 'y')
+
+            if (string.IsNullOrEmpty(input))
+            {
+                Console.WriteLine("Please enter Y or N.");
+                Console.ReadLine();
+                return;
+            }
+
+            char CreaAccAns = char.ToLower(input[0]);
+
+            if (CreaAccAns == 'y')
             {
                 Console.Write("Enter username: ");
                 string username = Console.ReadLine();
@@ -61,9 +79,19 @@ namespace UbaldoLoyaltyProgram
 
                 service.CreateAccount(username, password);
 
-                Console.WriteLine("\n[SUCCESS] Account saved to MySQL and JSON!");
+                Console.WriteLine("\n[SUCCESS] Account saved to MySQL");
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
+            }
+            else if (CreaAccAns == 'n')
+            {
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter Y or N.");
+                Console.ReadLine();
+                return;
             }
         }
 
@@ -81,13 +109,16 @@ namespace UbaldoLoyaltyProgram
                 if (service.Login(u, p))
                 {
                     Console.WriteLine("\nLogin Successful!");
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(500);
                     return true;
                 }
 
-                Console.WriteLine($"\nInvalid credentials. Attempts left: {2 - i}");
-                if (i < 2) Console.WriteLine("Press Enter to try again...");
-                Console.ReadLine();
+                else 
+                { 
+                    Console.WriteLine($"\nInvalid credentials. Attempts left: {2 - i}");
+                    if (i < 2) Console.WriteLine("Press Enter to try again...");
+                    Console.ReadLine();
+                }
             }
             return false;
         }
@@ -98,30 +129,64 @@ namespace UbaldoLoyaltyProgram
             {
                 Console.Clear();
                 Console.WriteLine("--- LOYALTY POINTS MENU ---");
-                Console.WriteLine("1. Add Points\n2. Use Points\n3. View Points\n4. Logout");
+                Console.WriteLine("1. Add Points \n2. Use Points \n3. View Points \n4.Logout");
                 Console.Write("\nChoice: ");
 
-                if (!int.TryParse(Console.ReadLine(), out int ans)) continue;
-                if (ans == 4) break;
+                string input = Console.ReadLine();
+                int ans;
 
-                switch (ans)
+                if (!int.TryParse(input, out ans))
                 {
-                    case 1: AddPoints(); break;
-                    case 2: UsePoints(); break;
-                    case 3: ViewPoints(); break;
+                    Console.WriteLine("Invalid input.");
+                    Console.ReadLine();
+                }
+                else if (ans == 1)
+                {
+                    AddPoints();
+                }
+                else if (ans == 2)
+                {
+                    UsePoints();
+                }
+                else if (ans == 3)
+                {
+                    ViewPoints();
+                }
+                else if (ans == 4)
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid choice.");
+                    Console.ReadLine();
                 }
             }
         }
 
         static void AddPoints()
         {
+            Console.Clear();
             Console.Write("\nEnter Total Spent: ");
+
             if (int.TryParse(Console.ReadLine(), out int spent))
             {
                 int earned = service.AddPoints(spent);
-                Console.WriteLine(earned > 0 ? $"[SUCCESS] Earned {earned} points!" : "[INFO] Amount below 500.");
+
+                if (earned > 0)
+                {
+                    Console.WriteLine($"[SUCCESS] Earned {earned} points!");
+                    Console.WriteLine($"[INFO] New Balance: {service.GetPoints()} points");
+                }
+                else
+                {
+                    Console.WriteLine("[INFO] Minimum spend is 500 to earn points.");
+                }
             }
-            else Console.WriteLine("[ERROR] Invalid number.");
+            else
+            {
+                Console.WriteLine("[ERROR] Invalid number.");
+            }
 
             Console.WriteLine("\nPress Enter to return...");
             Console.ReadLine();
@@ -131,15 +196,39 @@ namespace UbaldoLoyaltyProgram
         {
             Console.Clear();
             Console.WriteLine($"Current Balance: {service.GetPoints()} points");
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("1. 5% Discount (100 pts)\n2. 10% Discount (200 pts)\n3. 20% Discount (400 pts)");
-            Console.WriteLine("------------------------------");
+            Console.WriteLine("=================================");
+            Console.WriteLine("     SUPERMARKET MEMBER REWARDS");
+            Console.WriteLine("=================================");
+            Console.WriteLine("1. ₱20 Off Voucher (50 pts)");
+            Console.WriteLine("2. ₱50 Off Voucher (120 pts)");
+            Console.WriteLine("3. ₱100 Off Voucher (250 pts)");
+            Console.WriteLine("4. 5% Discount Coupon (300 pts)");
+            Console.WriteLine("5. Free Rice Pack (400 pts)");
+            Console.WriteLine("6. Free Grocery Item (500 pts)");
+            Console.WriteLine("7. Back to Menu");
+            Console.WriteLine("=================================");
             Console.Write("Select Reward: ");
 
             if (int.TryParse(Console.ReadLine(), out int choice))
             {
-                if (service.UsePoints(choice)) Console.WriteLine("\n[SUCCESS] Reward applied!");
-                else Console.WriteLine("\n[FAILED] Insufficient points or invalid choice.");
+                if (choice == 7)
+                {
+                    return;
+                }
+
+                if (service.UsePoints(choice))
+                {
+                    Console.WriteLine("\n[SUCCESS] Reward redeemed successfully!");
+                    Console.WriteLine($"[INFO] Remaining Points: {service.GetPoints()}");
+                }
+                else
+                {
+                    Console.WriteLine("\n[FAILED] Insufficient points or invalid choice.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n[ERROR] Invalid input.");
             }
 
             Console.WriteLine("\nPress Enter to return...");
@@ -149,7 +238,7 @@ namespace UbaldoLoyaltyProgram
         static void ViewPoints()
         {
             Console.Clear();
-            Console.WriteLine("--- POINT BALANCE ---");
+            Console.WriteLine("--- LOYALTY POINTS BALANCE ---");
             Console.WriteLine($"\nUser Account: Total Points = {service.GetPoints()}");
             Console.WriteLine("\nPress Enter to return...");
             Console.ReadLine();
