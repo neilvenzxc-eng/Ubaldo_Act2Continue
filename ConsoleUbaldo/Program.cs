@@ -1,8 +1,8 @@
-﻿using LoyaltyPoints.Data;    
+﻿using LoyaltyPoints.Data;
 using LoyaltyPoints.Services;
 using System;
 
-namespace LoyaltyPoints.UI   
+namespace LoyaltyPoints.UI
 {
     internal class Program
     {
@@ -79,7 +79,7 @@ namespace LoyaltyPoints.UI
 
                 service.CreateAccount(username, password);
 
-                Console.WriteLine("\n[SUCCESS] Account saved to MySQL");
+                Console.WriteLine("\n[SUCCESS] Account saved to MySQL and JSON");
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
             }
@@ -113,8 +113,8 @@ namespace LoyaltyPoints.UI
                     return true;
                 }
 
-                else 
-                { 
+                else
+                {
                     Console.WriteLine($"\nInvalid credentials. Attempts left: {2 - i}");
                     if (i < 2) Console.WriteLine("Press Enter to try again...");
                     Console.ReadLine();
